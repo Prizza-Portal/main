@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prizza — British Curriculum Portal</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1E293B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Prizza">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon-192.png">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Sturdy Typography: Outfit (Headings), Inter & Tajawal (Body & UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            paper: {
+              50: '#FAF8F5',
+              100: '#F3EFE6',
+              200: '#E5DFD5',
+              300: '#D2CABF',
+              800: '#232220',
+              900: '#141413',
+            },
+            darkbg: {
+              base: '#121213',
+              sidebar: '#18181A',
+              card: '#1E1E20',
+              border: '#2C2C30',
+              muted: '#9E9EA5'
+            },
+            britishNavy: {
+              DEFAULT: '#1E293B',
+              hover: '#0F172A',
+              light: '#F1F5F9'
+            },
+            charcoal: {
+              DEFAULT: '#1C1B1A',
+              muted: '#575550',
+              light: '#827E77'
+            }
+          },
+          fontFamily: {
+            display: ['Outfit', 'Tajawal', 'sans-serif'],
+            sans: ['Inter', 'Tajawal', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-[#FAF8F5] dark:bg-[#121213] text-charcoal dark:text-gray-100 antialiased min-h-screen flex selection:bg-britishNavy selection:text-white">
+
+  <!-- ================= 1. FIXED SIDEBAR NAVIGATION ================= -->
+  <aside id="sidebar" class="fixed top-0 bottom-0 z-40 w-64 bg-paper-100/90 dark:bg-darkbg-sidebar backdrop-blur-md border-r border-hairline flex flex-col justify-between transition-all duration-300 ltr:left-0 rtl:right-0 rtl:border-r-0 rtl:border-l">
+    
+    <div class="flex flex-col h-full overflow-y-auto">
+      
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-hairline flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-10 h-10 rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center justify-center font-display text-2xl font-bold shrink-0">
+            P
+          </div>
+          <div class="brand-text">
+            <h1 class="font-display text-2xl font-bold tracking-tight leading-none text-charcoal dark:text-white">Prizza</h1>
+            <span class="text-[11px] font-semibold text-charcoal-muted dark:text-darkbg-muted tracking-wider uppercase">School Portal</span>
+          </div>
+        </div>
+
+        <button onclick="toggleSidebarCollapse()" class="p-1.5 rounded-lg text-charcoal-muted dark:text-gray-400 hover:bg-paper-200 dark:hover:bg-darkbg-border transition-colors" aria-label="Collapse Sidebar">
+          <i id="collapse-icon" class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="px-3 space-y-1 my-4">
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all text-britishNavy dark:text-white bg-paper-200/80 dark:bg-darkbg-card">
+          <i class="fa-solid fa-house text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-dashboard">Dashboard</span>
+        </button>
+
+        <button onclick="switchView('assignments')" id="nav-assignments" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-book-bookmark text-base w-5 text-center"></i>
+          <span class="nav-text flex-grow text-left rtl:text-right" id="txt-nav-assignments">Prep & Homework</span>
+          <span class="badge-count px-2 py-0.5 rounded-full text-[10px] font-bold bg-britishNavy text-white" id="badge-prep-count">0</span>
+        </button>
+
+        <button onclick="switchView('resources')" id="nav-resources" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-folder-tree text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-resources">Learning Resources</span>
+        </button>
+
+        <button onclick="switchView('files')" id="nav-files" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-folder-open text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-files">Files</span>
+        </button>
+
+        <button onclick="switchView('news')" id="nav-news" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-bullhorn text-base w-5 text-center"></i>
+          <span class="nav-text flex-grow text-left rtl:text-right" id="txt-nav-news">School Notices</span>
+          <span class="badge-count px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white" id="badge-news-count">0</span>
+        </button>
+
+        <button onclick="switchView('blog')" id="nav-blog" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-newspaper text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-blog">School Blog</span>
+        </button>
+
+        <button onclick="switchView('calendar')" id="nav-calendar" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-calendar-days text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-calendar">Term Calendar</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- Controls & User Section -->
+    <div class="p-3 border-t border-hairline space-y-3">
+      
+      <!-- Language & Theme Switcher -->
+      <div class="flex items-center justify-around p-1.5 rounded-xl bg-paper-200/70 dark:bg-darkbg-card">
+        <button onclick="toggleLanguage()" class="px-3 py-1 text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-darkbg-border transition-all text-charcoal dark:text-gray-200" id="lang-btn">
+          العربية
+        </button>
+
+        <span class="text-hairline">|</span>
+
+        <button onclick="toggleTheme()" class="p-1 text-xs font-bold text-charcoal-muted dark:text-gray-300 hover:text-charcoal dark:hover:text-white transition-all" aria-label="Toggle Theme">
+          <i id="theme-icon" class="fa-regular fa-moon"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <button id="btn-newpost" onclick="openPostModal()" style="display:none" class="side-btn"><i class="fa-solid fa-plus w-5 text-center"></i><span class="nav-text">New post</span></button>
+        <button id="btn-notify" onclick="toggleNotifications()" class="side-btn"><i class="fa-regular fa-bell w-5 text-center"></i><span class="nav-text">Enable notifications</span></button>
+        <button id="btn-install" onclick="installApp()" style="display:none" class="side-btn"><i class="fa-solid fa-download w-5 text-center"></i><span class="nav-text">Install app</span></button>
+      </div>
+
+      <!-- User Role Controller Switcher -->
+      <div onclick="openAuthModal()" class="p-3 rounded-xl border border-hairline bg-white dark:bg-darkbg-card flex items-center justify-between cursor-pointer hover:border-britishNavy dark:hover:border-white transition-all">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-full bg-britishNavy text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div class="profile-text overflow-hidden">
+            <p id="user-display-name" class="text-xs font-bold text-charcoal dark:text-white truncate">Portal User</p>
+            <p id="user-display-role" class="text-[10px] font-semibold text-charcoal-muted dark:text-darkbg-muted truncate">Student Account</p>
+          </div>
+        </div>
+        <i class="fa-solid fa-arrows-rotate text-xs text-charcoal-muted brand-text"></i>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ================= 2. MAIN CONTENT WRAPPER ================= -->
+  <div id="main-wrapper" class="flex-grow ltr:pl-64 rtl:pr-64 transition-all duration-300 w-full min-h-screen flex flex-col">
+    
+    <!-- Mobile Navigation Header -->
+    <header class="md:hidden sticky top-0 z-30 bg-[#FAF8F5]/90 dark:bg-[#121213]/90 backdrop-blur-md border-b border-hairline p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebarCollapse()" class="p-2 text-charcoal dark:text-white">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <span class="font-display text-2xl font-bold">Prizza</span>
+      </div>
+      <button onclick="openAuthModal()" class="px-3 py-1.5 rounded-xl bg-britishNavy text-white text-xs font-bold">
+        <i class="fa-solid fa-user-graduate"></i>
+      </button>
+    </header>
+
+    <!-- Canvas -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-6 md:px-12 py-8 md:py-14">
+
+      <!-- SECTION 1: DASHBOARD -->
+      <section id="view-dashboard" class="content-view fade-in space-y-10">
+        <div class="space-y-2">
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white tracking-tight" id="txt-dash-heading">
+            Dashboard Overview
+          </h2>
+          <p class="text-xs font-medium text-charcoal-muted dark:text-darkbg-muted" id="txt-dash-sub">Current term status, alerts, and pending assignments.</p>
+        </div>
+
+        <!-- Dashboard Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-1">
+            <span class="text-xs font-semibold text-charcoal-muted dark:text-darkbg-muted" id="txt-stat-1">Pending Homework</span>
+            <p class="font-display text-3xl font-bold text-charcoal dark:text-white" id="stat-pending-count">0</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-1">
+            <span class="text-xs font-semibold text-charcoal-muted dark:text-darkbg-muted" id="txt-stat-2">Active Notices</span>
+            <p class="font-display text-3xl font-bold text-charcoal dark:text-white" id="stat-notices-count">0</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-1">
+            <span class="text-xs font-semibold text-charcoal-muted dark:text-darkbg-muted" id="txt-stat-3">Learning Resources</span>
+            <p class="font-display text-3xl font-bold text-charcoal dark:text-white" id="stat-resources-count">0</p>
+          </div>
+        </div>
+
+        <!-- Dashboard Updates Container (Empty for DB insertion) -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-hairline">
+            <h3 class="font-display text-2xl font-bold text-charcoal dark:text-white" id="txt-upcoming-title">Recent Prep & Tasks</h3>
+            <button onclick="switchView('assignments')" class="text-xs font-bold text-britishNavy dark:text-white hover:underline" id="txt-view-all">View All Prep</button>
+          </div>
+          
+          <!-- Database Insertion Target Container -->
+          <div id="dash-prep-container" class="space-y-3">
+            <!-- Dynamic Database Content Injected Here -->
+          </div>
+        </div>
+      </section>
+
+
+      <!-- SECTION 2: PREP & HOMEWORK -->
+      <section id="view-assignments" class="content-view fade-in space-y-8 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between pb-4 border-b border-hairline gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase" id="lbl-as-tag">Academic Tasks</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white mt-1" id="lbl-as-title">Prep & Homework</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="filterPrep('all')" class="prep-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-hairline bg-paper-100 dark:bg-darkbg-card text-charcoal dark:text-white">All Tasks</button>
+            <button onclick="filterPrep('pending')" class="prep-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-transparent text-charcoal-muted hover:text-charcoal dark:hover:text-white">Pending</button>
+            <button onclick="filterPrep('submitted')" class="prep-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-transparent text-charcoal-muted hover:text-charcoal dark:hover:text-white">Submitted</button>
+          </div>
+        </div>
+
+        <!-- Database Insertion Target Container -->
+        <div id="prep-list-container" class="space-y-4">
+          <!-- Dynamic Database Content Injected Here -->
+        </div>
+      </section>
+
+
+      <!-- SECTION 3: LEARNING RESOURCES -->
+      <section id="view-resources" class="content-view fade-in space-y-8 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between pb-4 border-b border-hairline gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase" id="lbl-res-tag">Revision & Documents</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white mt-1" id="lbl-res-title">Learning Resources</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="filterResources('all')" class="res-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-hairline bg-paper-100 dark:bg-darkbg-card text-charcoal dark:text-white">All</button>
+            <button onclick="filterResources('video')" class="res-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-transparent text-charcoal-muted hover:text-charcoal dark:hover:text-white">Videos</button>
+            <button onclick="filterResources('document')" class="res-filter px-3.5 py-2 text-xs font-bold rounded-xl border border-transparent text-charcoal-muted hover:text-charcoal dark:hover:text-white">Documents</button>
+          </div>
+        </div>
+
+        <!-- Database Insertion Target Container -->
+        <div id="resources-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Dynamic Database Content Injected Here -->
+        </div>
+      </section>
+
+
+      <!-- SECTION 4: SCHOOL NOTICES -->
+      <section id="view-news" class="content-view fade-in space-y-8 hidden">
+        <div class="pb-4 border-b border-hairline">
+          <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase" id="lbl-news-tag">Official Updates</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white mt-1" id="lbl-news-title">School Notices</h2>
+        </div>
+
+        <!-- Database Insertion Target Container -->
+        <div id="notices-timeline-container" class="space-y-5">
+          <!-- Dynamic Database Content Injected Here -->
+        </div>
+      </section>
+
+
+      <!-- SECTION 5: SCHOOL BLOG -->
+      <section id="view-blog" class="content-view fade-in space-y-8 hidden">
+        <div class="pb-4 border-b border-hairline">
+          <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase" id="lbl-blog-tag">Articles & Publications</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white mt-1" id="lbl-blog-title">School Blog</h2>
+        </div>
+
+        <!-- Database Insertion Target Container -->
+        <div id="blog-grid-container" class="grid grid-cols-1 gap-6">
+          <!-- Dynamic Database Content Injected Here -->
+        </div>
+      </section>
+
+
+      <!-- SECTION 6: TERM CALENDAR & ADMIN GRAPHIC UPLOADER -->
+      <section id="view-calendar" class="content-view fade-in space-y-8 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between pb-4 border-b border-hairline gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase" id="lbl-cal-tag">Academic Schedule</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-charcoal dark:text-white mt-1" id="lbl-cal-title">Term Calendar & Schedule</h2>
+          </div>
+          
+          <!-- Admin Only Schedule Image Upload Switcher -->
+          <div id="admin-upload-wrap" class="hidden">
+            <button onclick="openUploaderModal()" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy text-white hover:bg-britishNavy-hover transition-all flex items-center gap-2">
+              <i class="fa-solid fa-upload"></i>
+              <span id="lbl-upload-btn-txt">Upload Schedule Image</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl p-6 md:p-8 space-y-8">
+          <div class="flex flex-col md:flex-row gap-8 items-start justify-between">
+            <div class="space-y-4 max-w-md">
+              <h3 class="font-display text-2xl font-bold text-charcoal dark:text-white" id="lbl-sched-heading">Academic Timetable</h3>
+              <p class="text-xs font-medium text-charcoal-muted dark:text-darkbg-muted leading-relaxed" id="lbl-sched-sub">
+                Official schedule for all Key Stages. Admin updates will reflect in the image box on the right.
+              </p>
+            </div>
+
+            <!-- Schedule Graphic Image Container -->
+            <div class="w-full md:w-1/2 border border-hairline rounded-xl overflow-hidden bg-paper-50 dark:bg-darkbg-base p-4 flex flex-col items-center justify-center text-center min-h-[220px]">
+              <img id="schedule-image-display" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'><rect width='100%' height='100%' fill='%23F3EFE6'/><text x='50%' y='50%' font-family='Outfit, sans-serif' font-size='20' font-weight='bold' fill='%231E293B' text-anchor='middle'>No Schedule Image Uploaded</text></svg>" alt="Schedule Graphic" class="w-full h-auto object-cover rounded-lg">
+            </div>
+          </div>
+
+          <!-- Weekly Matrix Container -->
+          <div class="border-t border-hairline pt-6">
+            <h4 class="text-xs font-bold tracking-wider text-charcoal-muted dark:text-gray-300 uppercase mb-4" id="lbl-days-title">Weekly Overview</h4>
+            
+            <!-- Database Insertion Target Container -->
+            <div id="weekly-schedule-container" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              <!-- Dynamic Database Content Injected Here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7: FILES -->
+      <section id="view-files" class="content-view fade-in space-y-6 hidden">
+        <div class="pb-4 border-b border-hairline flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Library</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Files</h2>
+          </div>
+          <div class="relative w-full sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-charcoal-muted"></i>
+            <input id="files-search" placeholder="Search all files…" class="field !pl-8">
+          </div>
+        </div>
+
+        <div id="files-staff-bar" style="display:none" class="space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-newfolder" class="side-btn !w-auto"><i class="fa-solid fa-folder-plus"></i> New folder</button>
+            <button id="btn-upload" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2"><i class="fa-solid fa-upload"></i> Upload files</button>
+            <label class="flex items-center gap-2 text-xs font-bold text-charcoal-muted dark:text-darkbg-muted"><input id="files-notify" type="checkbox"> Notify students</label>
+            <input id="file-input" type="file" multiple class="hidden">
+          </div>
+          <form id="folder-form" class="hidden">
+            <div class="flex items-center gap-2">
+              <input id="folder-name" required maxlength="60" placeholder="Folder name" class="field !w-56">
+              <button class="px-3 py-2.5 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Create</button>
+            </div>
+          </form>
+        </div>
+
+        <nav id="files-crumbs" class="flex items-center flex-wrap gap-2 text-sm font-semibold"></nav>
+        <div id="files-folders" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+        <div id="files-list" class="space-y-2"></div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ================= 3. MODALS & DRAWERS ================= -->
+
+  <!-- ADMIN TIMETABLE IMAGE UPLOADER MODAL -->
+  <div id="uploader-modal" class="fixed inset-0 z-50 bg-charcoal/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl max-w-md w-full p-8 shadow-2xl relative fade-in">
+      <button onclick="closeUploaderModal()" class="absolute right-5 top-5 text-charcoal-muted hover:text-charcoal dark:hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="font-display text-2xl font-bold text-charcoal dark:text-white mb-2" id="txt-modal-upload-head">Upload Schedule Image</h3>
+      <p class="text-xs font-medium text-charcoal-muted dark:text-darkbg-muted mb-6" id="txt-modal-upload-sub">Insert or update the term schedule image stored in the system database.</p>
+
+      <div onclick="document.getElementById('cal-img-input').click()" class="border-2 border-dashed border-hairline hover:border-britishNavy rounded-xl p-8 text-center cursor-pointer transition-colors bg-paper-50 dark:bg-darkbg-base">
+        <i class="fa-solid fa-file-image text-3xl text-britishNavy dark:text-white mb-2"></i>
+        <p class="text-xs font-bold text-charcoal dark:text-white" id="txt-drag-title">Click or drag image file here</p>
+        <p class="text-[11px] font-medium text-charcoal-muted dark:text-darkbg-muted">PNG, JPG, or WebP</p>
+        <input type="file" id="cal-img-input" accept="image/*" class="hidden" onchange="handleCalendarFileSelect(event)">
+      </div>
+
+      <div id="upload-prev-wrap" class="mt-4 hidden space-y-4">
+        <img id="upload-prev-img" src="" alt="Preview" class="w-full h-32 object-cover rounded-lg border border-hairline">
+        <button onclick="saveUploadedCalendarImg()" class="w-full py-2.5 bg-britishNavy hover:bg-britishNavy-hover text-white font-bold rounded-xl text-sm transition-all">
+          Publish to System
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- STAFF POST MODAL -->
+  <div id="post-modal" class="fixed inset-0 z-50 bg-charcoal/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl max-w-md w-full p-7 shadow-2xl relative fade-in max-h-[92vh] overflow-y-auto">
+      <button onclick="closePostModal()" class="absolute right-5 top-5 text-charcoal-muted hover:text-charcoal dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 class="font-display text-2xl font-bold mb-4">New post</h3>
+      <form onsubmit="submitPost(event)" class="space-y-3">
+        <select name="kind" class="field"><option value="notice">School notice</option><option value="assignment">Prep / Homework</option><option value="resource">Learning resource</option><option value="blog">Blog post</option></select>
+        <input name="title" required maxlength="140" placeholder="Title" class="field">
+        <textarea name="body" rows="4" placeholder="Details" class="field"></textarea>
+        <input name="link" type="url" placeholder="Link (optional, https://…)" class="field">
+        <label class="block text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Due date (homework only)<input name="due" type="date" class="field mt-1"></label>
+        <label class="flex items-center gap-2 text-xs font-bold"><input name="important" type="checkbox" checked> Important — send a push notification to everyone</label>
+        <button class="w-full py-3 bg-britishNavy dark:bg-white text-white dark:text-britishNavy font-bold rounded-xl text-sm">Publish</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= 4. JAVASCRIPT STATE ENGINE ================= -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/portal.js"></script>
+  <script src="js/files.js"></script>
+</body>
+</html>
