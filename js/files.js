@@ -134,6 +134,7 @@
   ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('drop-on')));
   zone.addEventListener('drop', e => { if (P().isStaff()) { e.preventDefault(); upload([...e.dataTransfer.files]); } });
 
+  document.addEventListener('pz-lang', () => (folders.length || files.length) && render());
   document.addEventListener('pz-ready', () => {
     load();
     sb.channel('library-live')

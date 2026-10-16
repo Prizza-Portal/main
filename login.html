@@ -7,11 +7,12 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1E293B">
   <link rel="icon" href="icons/icon-192.png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@600;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="auth-body">
   <main class="auth-card">
+    <button type="button" id="lang-login" data-no-i18n class="auth-lang">العربية</button>
     <div class="auth-logo">P</div>
     <h1>Prizza</h1>
     <p class="auth-tag">All important news, homework and updates in one place — sent straight to your phone for your convenience.</p>
@@ -22,7 +23,8 @@
     <form id="auth-form">
       <label id="name-wrap" hidden>Full name<input id="name" autocomplete="name"></label>
       <label>Username<input id="username" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_.]+" placeholder="letters, numbers, _ or ." autocomplete="username" autocapitalize="none"></label>
-      <label>Password<input id="password" type="password" required minlength="6" autocomplete="current-password"></label>
+      <label>Password<input id="password" type="password" required minlength="8" autocomplete="current-password"></label>
+      <label id="code-wrap" hidden>Class code<input id="classcode" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="XXXX-XXXX-XXXX" dir="ltr"><small class="auth-hint">Ask your teacher for your class code.</small></label>
       <p id="msg" class="auth-msg" role="alert"></p>
       <button id="submit" class="auth-btn">Log in</button>
     </form>
@@ -30,6 +32,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/auth.js"></script>
 </body>
 </html>

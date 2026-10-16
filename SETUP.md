@@ -47,3 +47,18 @@ Zoom, Google Meet and Teams cannot be embedded in other sites, so they open in a
 1. SQL Editor → run `supabase/extras.sql` once (if `pg_cron` errors: Database → Extensions → enable `pg_cron`, then run again).
 2. Users page (reset password / delete): Edge Functions → Deploy a new function → name `admin-users` → paste `supabase/functions/admin-users/index.ts` → turn **Verify JWT** OFF → Deploy. (Role changes work without it.)
 3. Reminders: every minute the database checks for sessions starting within 15 minutes and posts an important notice, which your existing push setup sends to everyone. Push notifications must already be set up (section 3).
+
+## Voice Rooms
+Run `supabase/voice.sql` once. Audio goes directly between browsers (WebRTC); Supabase Realtime carries presence, signalling and whiteboard strokes.
+- Needs HTTPS (or localhost) for the microphone. Up to 8 people per channel.
+- Some school/mobile networks block direct connections. If someone can join but can't hear anyone, add a free TURN relay (e.g. Metered): put it in `js/config.js` as
+  `ICE_SERVERS: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:YOUR-TURN-HOST', username: '...', credential: '...' }]` inside `window.PRIZZA`.
+
+## Class codes (signup protection) — run `supabase/class_codes.sql`
+1. SQL Editor → run `supabase/class_codes.sql` once (after `extras.sql`).
+2. Re-deploy the `admin-users` edge function with the new `index.ts` (adds "Create account" without a code).
+3. Authentication → Sign In / Providers → Email: set **Minimum password length** to 8. Keep "Allow new users to sign up" ON — the database trigger is what enforces the code.
+4. Optional but recommended: Authentication → Attack protection → enable CAPTCHA.
+5. Sign in as admin → **School setup**: add a school, add classes, then **Generate code**. Copy it immediately — only a hash is stored, so it can never be shown again. Give each class its own code.
+Students enter the code on the Sign up tab. Admins create teacher/admin accounts from **Users → Create account** (no code needed).
+Note: adding a user from the Supabase dashboard's "Add user" button will be rejected by the gate — use Users → Create account instead.

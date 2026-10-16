@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   const safeUrl = u => /^https?:\/\//i.test(u || '') ? esc(u) : '';
-  const fmt = d => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  const fmt = d => new Date(d).toLocaleDateString(I18N.locale(), { day: 'numeric', month: 'short', year: 'numeric' });
 
   let me, profile, posts = [], done = new Set(), prepFilter = 'all', resFilter = 'all', deferredInstall, schedFile;
   const isStaff = () => profile && ['teacher', 'admin'].includes(profile.role);
@@ -36,9 +36,9 @@
       <button data-done="${p.id}" class="shrink-0 px-3 py-2 rounded-xl text-xs font-bold border border-hairline ${d ? 'bg-britishNavy text-white' : ''}">${d ? 'Submitted' : 'Mark done'}</button>
     </article>`;
   }
-  const noticeCard = p => `<article class="${card} ${p.important ? 'border-l-4 !border-l-amber-600' : ''} space-y-1.5">
+  const noticeCard = p => `<article class="${card} ${p.important ? 'border-s-4 !border-s-amber-600' : ''} space-y-1.5">
       <div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 flex-wrap"><h4 class="font-display text-lg font-bold">${esc(p.title)}</h4>${imp(p)}</div>${when(p)}</div>
-      <p class="${muted} whitespace-pre-line">${esc(p.body)}</p><div class="flex gap-4">${link(p)}${del(p)}</div></article>`;
+      <p class="${muted} whitespace-pre-line">${esc(p.body)}</p><div class="flex gap-4">${link(p)}${del(p)}${isStaff() ? `<button data-wacopy="${p.id}" class="text-[11px] font-bold text-green-700 hover:underline"><i class="fa-brands fa-whatsapp"></i> Copy for WhatsApp</button>` : ''}</div></article>`;
   const blogCard = p => `<article class="${card} space-y-2">${when(p)}<h4 class="font-display text-xl font-bold">${esc(p.title)}</h4>
       <p class="text-sm text-charcoal-muted dark:text-gray-300 whitespace-pre-line">${esc(p.body)}</p><div class="flex gap-4">${link(p, 'Read more')}${del(p)}</div></article>`;
   const resCard = p => `<article class="${card} flex gap-4 items-start">
@@ -83,6 +83,12 @@
 
   // ---------- Clicks: mark done / delete ----------
   document.addEventListener('click', async e => {
+    const w = e.target.closest('[data-wacopy]');
+    if (w) {
+      const p = posts.find(z => z.id === w.dataset.wacopy);
+      const text = `*${p.title}*\n${p.body || ''}${p.link ? '\n' + p.link : ''}`.trim();
+      try { await navigator.clipboard.writeText(text); toast('Copied — paste it into your WhatsApp channel'); } catch { toast('Could not copy automatically.'); }
+    }
     const d = e.target.closest('[data-done]'), x = e.target.closest('[data-del]');
     if (d) {
       const id = d.dataset.done;
@@ -171,7 +177,8 @@
     else toast('iPhone/iPad: tap Share → Add to Home Screen. Desktop/Android: use the install icon in the address bar or browser menu.');
   };
 
-  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; } };
+  document.addEventListener('pz-lang', () => { if (me) { render(); refreshBell(); } });
+  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; }, get name() { return profile?.full_name || me.email.split('@')[0]; } };
 
   // ---------- Boot ----------
   document.addEventListener('DOMContentLoaded', async () => {

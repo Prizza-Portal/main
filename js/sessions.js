@@ -21,23 +21,23 @@
     return s.platform === 'other' ? u : null;
   }
   const status = s => { const n = Date.now(); return n < +new Date(s.starts_at) ? 'upcoming' : n <= +new Date(s.ends_at) ? 'live' : 'past'; };
-  const day = d => new Date(d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-  const tm = d => new Date(d).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const day = d => new Date(d).toLocaleDateString(I18N.locale(), { weekday: 'short', day: 'numeric', month: 'short' });
+  const tm = d => new Date(d).toLocaleTimeString(I18N.locale() || [], { hour: 'numeric', minute: '2-digit' });
 
   function row(s, st) {
     const staff = P().isStaff(), [pName, pIcon] = PLATFORMS[s.platform] || PLATFORMS.other;
-    const border = { live: 'border-l-green-500', upcoming: 'border-l-blue-500', past: 'border-l-orange-500' }[st];
+    const border = { live: 'border-s-green-500', upcoming: 'border-s-blue-500', past: 'border-s-orange-500' }[st];
     const badge = st === 'live' ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-600 text-white animate-pulse">● Live now</span>'
       : st === 'upcoming' ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-700">Upcoming</span>'
       : '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-700 dark:bg-darkbg-main dark:text-gray-300">Completed</span>';
     const btn = 'px-3 py-2 rounded-xl text-xs font-bold';
     const canJoin = st !== 'past' && safe(s.link);
     const present = st === 'past' && !staff ? (att.has(s.id) ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700"><i class="fa-solid fa-check"></i> Present</span>' : '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700">Absent</span>') : '';
-    return `<article class="${card} border-l-4 ${border} p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-      <div class="md:w-44 shrink-0"><p class="text-sm font-bold"><i class="fa-regular fa-calendar text-xs mr-1.5 opacity-60"></i>${day(s.starts_at)}</p>
+    return `<article class="${card} border-s-4 ${border} p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+      <div class="md:w-44 shrink-0"><p class="text-sm font-bold"><i class="fa-regular fa-calendar text-xs me-1.5 opacity-60"></i>${day(s.starts_at)}</p>
         <p class="${muted} mt-0.5">${tm(s.starts_at)} – ${tm(s.ends_at)}</p></div>
       <div class="min-w-0 flex-grow"><h4 class="font-display text-lg font-bold">${P().esc(s.title)}</h4>
-        <p class="${muted} mt-0.5"><i class="fa-solid ${pIcon} text-orange-500 mr-1"></i>${pName}</p>
+        <p class="${muted} mt-0.5"><i class="fa-solid ${pIcon} text-orange-500 me-1"></i>${pName}</p>
         ${s.description ? `<p class="${muted} mt-1 whitespace-pre-line">${P().esc(s.description)}</p>` : ''}</div>
       <div class="flex flex-wrap items-center gap-2">${badge}${present}
         ${canJoin && embedUrl(s) ? `<button data-watch="${s.id}" data-join="${s.id}" class="${btn} bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Join in site</button>` : ''}
@@ -130,6 +130,7 @@
     }
   });
 
+  document.addEventListener('pz-lang', () => rows.length && render());
   document.addEventListener('pz-ready', () => {
     load();
     setInterval(render, 30000); // statuses flip automatically as time passes

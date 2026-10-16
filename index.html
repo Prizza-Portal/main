@@ -124,6 +124,16 @@
           <span class="nav-text" id="txt-nav-users">Users</span>
         </button>
 
+        <button onclick="switchView('voice')" id="nav-voice" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-headset text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-voice">Voice Rooms</span>
+        </button>
+
+        <button onclick="switchView('setup')" id="nav-setup" style="display:none" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-school text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-setup">School setup</span>
+        </button>
+
         <button onclick="switchView('files')" id="nav-files" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
           <i class="fa-solid fa-folder-open text-base w-5 text-center"></i>
           <span class="nav-text" id="txt-nav-files">Files</span>
@@ -168,6 +178,8 @@
         <button id="btn-newpost" onclick="openPostModal()" style="display:none" class="side-btn"><i class="fa-solid fa-plus w-5 text-center"></i><span class="nav-text">New post</span></button>
         <button id="btn-notify" onclick="toggleNotifications()" class="side-btn"><i class="fa-regular fa-bell w-5 text-center"></i><span class="nav-text">Enable notifications</span></button>
         <button id="btn-install" onclick="installApp()" style="display:none" class="side-btn"><i class="fa-solid fa-download w-5 text-center"></i><span class="nav-text">Install app</span></button>
+        <a id="btn-wa" href="#" target="_blank" rel="noopener" style="display:none" class="side-btn"><i class="fa-brands fa-whatsapp w-5 text-center text-green-600"></i><span class="nav-text">Join WhatsApp channel</span></a>
+        <button id="btn-wa-edit" style="display:none" class="side-btn"><i class="fa-solid fa-link w-5 text-center"></i><span class="nav-text">Set WhatsApp link</span></button>
       </div>
 
       <!-- User Role Controller Switcher -->
@@ -368,8 +380,8 @@
             <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Files</h2>
           </div>
           <div class="relative w-full sm:w-64">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-charcoal-muted"></i>
-            <input id="files-search" placeholder="Search all files…" class="field !pl-8">
+            <i class="fa-solid fa-magnifying-glass absolute start-3 top-1/2 -translate-y-1/2 text-xs text-charcoal-muted"></i>
+            <input id="files-search" placeholder="Search all files…" class="field !ps-8">
           </div>
         </div>
 
@@ -465,9 +477,98 @@
             <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Users</h2>
             <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Change roles, reset passwords or remove accounts.</p>
           </div>
-          <input id="users-search" placeholder="Search users…" class="field sm:!w-64">
+          <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+            <button id="ua-toggle" type="button" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy"><i class="fa-solid fa-user-plus"></i> Create account</button>
+            <input id="users-search" placeholder="Search users…" class="field sm:!w-56">
+          </div>
         </div>
+        <form id="ua-form" class="hidden p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
+          <h3 class="font-display text-xl font-bold">Create account (no class code needed)</h3>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <input id="ua-user" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_.]+" placeholder="Username" autocapitalize="none" class="field">
+            <input id="ua-name" maxlength="80" placeholder="Full name" class="field">
+            <input id="ua-pass" type="password" required minlength="8" placeholder="Password (min 8 characters)" autocomplete="new-password" class="field">
+            <select id="ua-role" class="field"><option value="student">student</option><option value="teacher">teacher</option><option value="admin">admin</option></select>
+            <select id="ua-class" class="field sm:col-span-2"></select>
+          </div>
+          <button class="px-4 py-2.5 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Create account</button>
+        </form>
         <div id="users-list" class="space-y-2"></div>
+      </section>
+
+      <!-- SECTION 11: VOICE ROOMS -->
+      <section id="view-voice" class="content-view fade-in space-y-4 hidden">
+        <div class="pb-4 border-b border-hairline">
+          <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Talk &amp; draw</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Voice Rooms</h2>
+          <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Join a channel to talk by voice and share a live whiteboard. Your call keeps running while you browse other pages.</p>
+        </div>
+        <div class="dc">
+          <aside class="dc-side">
+            <div class="dc-head"><span>Voice channels</span><button id="vc-add" style="display:none" title="New channel" aria-label="New channel"><i class="fa-solid fa-plus"></i></button></div>
+            <div id="vc-list" class="overflow-y-auto"></div>
+            <div id="vc-panel" class="dc-panel" style="display:none">
+              <div class="min-w-0"><p class="text-[11px] font-bold" style="color:#23a55a"><i class="fa-solid fa-signal"></i> Voice connected</p><p id="vc-panel-name" class="text-xs truncate" style="color:#949ba4"></p></div>
+              <div class="flex gap-1.5">
+                <button id="vc-mute" class="dc-btn" title="Mute" aria-label="Mute"><i class="fa-solid fa-microphone"></i></button>
+                <button id="vc-deaf" class="dc-btn" title="Deafen" aria-label="Deafen"><i class="fa-solid fa-headphones"></i></button>
+                <button id="vc-leave" class="dc-btn dc-red" title="Leave" aria-label="Leave"><i class="fa-solid fa-phone-slash"></i></button>
+              </div>
+            </div>
+          </aside>
+          <div class="dc-main">
+            <div id="vc-empty" class="dc-empty"><i class="fa-solid fa-headset text-4xl mb-3" style="color:#5865f2"></i><p class="font-bold">No voice channel joined</p><p class="text-xs mt-1">Pick a channel on the left to start talking and drawing together.</p></div>
+            <div id="vc-room" style="display:none;flex-direction:column;flex:1">
+              <div class="dc-bar"><span><i class="fa-solid fa-volume-high me-2" style="color:#949ba4"></i><b id="vc-room-name"></b></span><span id="vc-count" class="text-xs" style="color:#949ba4"></span></div>
+              <div id="vc-tiles" class="dc-tiles"></div>
+              <div class="dc-tools">
+                <button data-tool="pen" class="dc-tool on" title="Pen"><i class="fa-solid fa-pen"></i></button>
+                <button data-tool="eraser" class="dc-tool" title="Eraser"><i class="fa-solid fa-eraser"></i></button>
+                <span id="vc-colors" class="flex gap-1.5"></span>
+                <input id="vc-size" type="range" min="1" max="24" value="4" title="Size" class="w-24">
+                <span class="flex-grow"></span>
+                <label id="vc-lock-wrap" style="display:none" class="text-[11px] font-bold flex items-center gap-1.5"><input id="vc-lock" type="checkbox" checked> Students can draw</label>
+                <button id="vc-save" class="dc-tool" title="Save as image"><i class="fa-solid fa-download"></i></button>
+                <button id="vc-clear" style="display:none" class="dc-tool" title="Clear board"><i class="fa-solid fa-trash"></i></button>
+              </div>
+              <div class="dc-board-wrap"><div id="vc-board" class="dc-board"><canvas id="vc-canvas"></canvas><p id="vc-locked" style="display:none" class="dc-locked">Drawing is locked by the teacher</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12: SCHOOL SETUP (admin only) -->
+      <section id="view-setup" class="content-view fade-in space-y-6 hidden">
+        <div class="pb-4 border-b border-hairline">
+          <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Admin</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">School setup</h2>
+          <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Create schools and classes, then generate class codes for students to sign up.</p>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-6 items-start">
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
+            <h3 class="font-display text-xl font-bold">Schools &amp; classes</h3>
+            <form id="school-form" class="flex gap-2"><input id="school-name" required maxlength="80" placeholder="New school name" class="field"><button class="px-3 py-2 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy whitespace-nowrap">Add school</button></form>
+            <div id="school-list" class="space-y-3"></div>
+          </div>
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
+            <h3 class="font-display text-xl font-bold">Class codes</h3>
+            <form id="code-form" class="space-y-2">
+              <select id="code-class" class="field"></select>
+              <input id="code-label" maxlength="60" placeholder="Label (e.g. Year 9A — autumn intake)" class="field">
+              <div class="grid grid-cols-2 gap-2">
+                <label class="text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Max sign-ups<input id="code-max" type="number" min="1" max="1000" value="30" class="field mt-1"></label>
+                <label class="text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Valid for (days)<input id="code-days" type="number" min="1" max="365" value="14" class="field mt-1"></label>
+              </div>
+              <button class="w-full px-3 py-2.5 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Generate code</button>
+            </form>
+            <div id="code-new" class="hidden rounded-xl border-2 border-amber-500 p-4 space-y-2 text-center">
+              <p class="text-xs font-bold text-amber-700">Save this code now — for your safety it is shown only once and can't be recovered.</p>
+              <p id="code-value" data-no-i18n dir="ltr" class="font-mono text-2xl font-bold tracking-widest select-all"></p>
+              <div class="flex justify-center gap-2"><button id="code-copy" type="button" class="px-3 py-2 rounded-xl text-xs font-bold border border-hairline">Copy</button><button id="code-done" type="button" class="px-3 py-2 rounded-xl text-xs font-bold border border-hairline">Done</button></div>
+            </div>
+            <div id="code-list" class="space-y-2"></div>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -506,8 +607,8 @@
   <!-- ATTENDANCE MODAL -->
   <div id="attendance-modal" class="fixed inset-0 z-50 bg-charcoal/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl max-w-md w-full p-6 relative max-h-[85vh] overflow-y-auto">
-      <button id="att-close" class="absolute right-5 top-5 text-charcoal-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
-      <h3 id="att-title" class="font-display text-xl font-bold mb-3 pr-8"></h3>
+      <button id="att-close" class="absolute end-5 top-5 text-charcoal-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 id="att-title" class="font-display text-xl font-bold mb-3 pe-8"></h3>
       <div id="att-list" class="space-y-2 text-sm"></div>
     </div>
   </div>
@@ -545,10 +646,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/portal.js"></script>
   <script src="js/files.js"></script>
   <script src="js/sessions.js"></script>
   <script src="js/quizzes.js"></script>
   <script src="js/users.js"></script>
+  <script src="js/setup.js"></script>
+  <script src="js/whatsapp.js"></script>
+  <script src="js/voice.js"></script>
 </body>
 </html>

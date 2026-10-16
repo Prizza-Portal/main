@@ -132,5 +132,6 @@
       r.error ? P().toast(r.error.message) : load();
     }
   });
+  document.addEventListener('pz-lang', () => { if (quizzes.length && !$('quiz-list').classList.contains('hidden')) renderList(); });
   document.addEventListener('pz-ready', load);
 })();
