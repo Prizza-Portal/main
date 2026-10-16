@@ -114,6 +114,16 @@
           <span class="nav-text" id="txt-nav-sessions">Zoom Sessions</span>
         </button>
 
+        <button onclick="switchView('quizzes')" id="nav-quizzes" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-circle-question text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-quizzes">Quizzes</span>
+        </button>
+
+        <button onclick="switchView('users')" id="nav-users" style="display:none" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-users-gear text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-users">Users</span>
+        </button>
+
         <button onclick="switchView('files')" id="nav-files" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
           <i class="fa-solid fa-folder-open text-base w-5 text-center"></i>
           <span class="nav-text" id="txt-nav-files">Files</span>
@@ -418,6 +428,48 @@
         <div id="sessions-container" class="space-y-6"></div>
       </section>
 
+      <!-- SECTION 9: QUIZZES -->
+      <section id="view-quizzes" class="content-view fade-in space-y-6 hidden">
+        <div class="pb-4 border-b border-hairline flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Practice</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Quizzes</h2>
+            <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Test yourself and see your score straight away.</p>
+          </div>
+          <button id="btn-newquiz" style="display:none" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2 self-start"><i class="fa-solid fa-plus"></i> New quiz</button>
+        </div>
+        <div id="quiz-list" class="space-y-3"></div>
+        <div id="quiz-take" class="hidden space-y-4"></div>
+        <div id="quiz-results" class="hidden space-y-3"></div>
+        <form id="quiz-build" class="hidden space-y-4">
+          <div class="p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
+            <h3 class="font-display text-xl font-bold">New quiz</h3>
+            <input id="qb-title" required maxlength="120" placeholder="Quiz title" class="field">
+            <textarea id="qb-desc" rows="2" placeholder="Description (optional)" class="field"></textarea>
+          </div>
+          <div id="qb-questions" class="space-y-4"></div>
+          <button type="button" id="qb-add" class="side-btn !w-auto"><i class="fa-solid fa-plus"></i> Add question</button>
+          <label class="flex items-center gap-2 text-xs font-bold"><input id="qb-notify" type="checkbox"> Notify students</label>
+          <div class="flex gap-2">
+            <button class="px-4 py-2.5 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Publish quiz</button>
+            <button type="button" id="qb-cancel" class="px-4 py-2.5 rounded-xl text-xs font-bold border border-hairline">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- SECTION 10: USERS (admin only) -->
+      <section id="view-users" class="content-view fade-in space-y-6 hidden">
+        <div class="pb-4 border-b border-hairline flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Admin</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Users</h2>
+            <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Change roles, reset passwords or remove accounts.</p>
+          </div>
+          <input id="users-search" placeholder="Search users…" class="field sm:!w-64">
+        </div>
+        <div id="users-list" class="space-y-2"></div>
+      </section>
+
     </main>
   </div>
 
@@ -450,6 +502,15 @@
     </div>
   </div>
 
+
+  <!-- ATTENDANCE MODAL -->
+  <div id="attendance-modal" class="fixed inset-0 z-50 bg-charcoal/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl max-w-md w-full p-6 relative max-h-[85vh] overflow-y-auto">
+      <button id="att-close" class="absolute right-5 top-5 text-charcoal-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 id="att-title" class="font-display text-xl font-bold mb-3 pr-8"></h3>
+      <div id="att-list" class="space-y-2 text-sm"></div>
+    </div>
+  </div>
 
   <!-- IN-SITE MEETING VIEWER -->
   <div id="meeting-modal" class="fixed inset-0 z-50 bg-black hidden flex-col">
@@ -487,5 +548,7 @@
   <script src="js/portal.js"></script>
   <script src="js/files.js"></script>
   <script src="js/sessions.js"></script>
+  <script src="js/quizzes.js"></script>
+  <script src="js/users.js"></script>
 </body>
 </html>

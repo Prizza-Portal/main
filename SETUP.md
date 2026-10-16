@@ -42,3 +42,8 @@ Host the site first, then go to pwabuilder.com, enter your site URL and choose A
 ## Sessions page
 Run `supabase/sessions.sql` once. Staff add sessions (name, platform, link, start/end); students automatically see Live / Upcoming / Past by the clock.
 Zoom, Google Meet and Teams cannot be embedded in other sites, so they open in a new tab/app. YouTube Live links play inside the site.
+
+## Quizzes, attendance, Users page, reminders
+1. SQL Editor → run `supabase/extras.sql` once (if `pg_cron` errors: Database → Extensions → enable `pg_cron`, then run again).
+2. Users page (reset password / delete): Edge Functions → Deploy a new function → name `admin-users` → paste `supabase/functions/admin-users/index.ts` → turn **Verify JWT** OFF → Deploy. (Role changes work without it.)
+3. Reminders: every minute the database checks for sessions starting within 15 minutes and posts an important notice, which your existing push setup sends to everyone. Push notifications must already be set up (section 3).

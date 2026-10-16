@@ -2,7 +2,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const P = () => window.PZ;
-  let rows = [], editing = null;
+  let rows = [], editing = null, att = new Set(), counts = {};
 
   const PLATFORMS = { zoom: ['Zoom', 'fa-video'], meet: ['Google Meet', 'fa-video'], teams: ['Microsoft Teams', 'fa-users'],
     youtube: ['YouTube Live', 'fa-brands fa-youtube'], other: ['Online', 'fa-link'] };
@@ -32,16 +32,18 @@
       : '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-700 dark:bg-darkbg-main dark:text-gray-300">Completed</span>';
     const btn = 'px-3 py-2 rounded-xl text-xs font-bold';
     const canJoin = st !== 'past' && safe(s.link);
+    const present = st === 'past' && !staff ? (att.has(s.id) ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700"><i class="fa-solid fa-check"></i> Present</span>' : '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700">Absent</span>') : '';
     return `<article class="${card} border-l-4 ${border} p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
       <div class="md:w-44 shrink-0"><p class="text-sm font-bold"><i class="fa-regular fa-calendar text-xs mr-1.5 opacity-60"></i>${day(s.starts_at)}</p>
         <p class="${muted} mt-0.5">${tm(s.starts_at)} – ${tm(s.ends_at)}</p></div>
       <div class="min-w-0 flex-grow"><h4 class="font-display text-lg font-bold">${P().esc(s.title)}</h4>
         <p class="${muted} mt-0.5"><i class="fa-solid ${pIcon} text-orange-500 mr-1"></i>${pName}</p>
         ${s.description ? `<p class="${muted} mt-1 whitespace-pre-line">${P().esc(s.description)}</p>` : ''}</div>
-      <div class="flex flex-wrap items-center gap-2">${badge}
-        ${canJoin && embedUrl(s) ? `<button data-watch="${s.id}" class="${btn} bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Join in site</button>` : ''}
-        ${canJoin ? `<a href="${P().esc(safe(s.link))}" target="_blank" rel="noopener" class="${btn} ${embedUrl(s) ? 'border border-hairline' : 'bg-britishNavy dark:bg-white text-white dark:text-britishNavy'}">${st === 'live' ? 'Join now' : 'Open link'} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>` : ''}
-        ${staff ? `<button data-sedit="${s.id}" class="${btn} border border-hairline" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+      <div class="flex flex-wrap items-center gap-2">${badge}${present}
+        ${canJoin && embedUrl(s) ? `<button data-watch="${s.id}" data-join="${s.id}" class="${btn} bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Join in site</button>` : ''}
+        ${canJoin ? `<a data-join="${s.id}" href="${P().esc(safe(s.link))}" target="_blank" rel="noopener" class="${btn} ${embedUrl(s) ? 'border border-hairline' : 'bg-britishNavy dark:bg-white text-white dark:text-britishNavy'}">${st === 'live' ? 'Join now' : 'Open link'} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>` : ''}
+        ${staff ? `<button data-att="${s.id}" class="${btn} border border-hairline" aria-label="Attendance"><i class="fa-solid fa-user-check"></i> ${counts[s.id] || 0}</button>
+        <button data-sedit="${s.id}" class="${btn} border border-hairline" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
         <button data-sdel="${s.id}" class="${btn} border border-hairline text-red-600" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>` : ''}</div>
     </article>`;
   }
@@ -61,7 +63,11 @@
   async function load() {
     const { data, error } = await sb.from('sessions').select('*').order('starts_at', { ascending: false });
     if (error) return P().toast(error.message);
-    rows = data; render();
+    rows = data;
+    const a = await sb.from('session_attendance').select('session_id,user_id');
+    att = new Set(); counts = {};
+    (a.data || []).forEach(x => { counts[x.session_id] = (counts[x.session_id] || 0) + 1; if (x.user_id === P().me.id) att.add(x.session_id); });
+    render();
   }
 
   // datetime-local <-> ISO (admin types in their own timezone; every student sees it in theirs)
@@ -81,7 +87,7 @@
   $('session-form').onsubmit = async e => {
     e.preventDefault();
     const row = { title: $('s-title').value.trim(), platform: $('s-platform').value, link: $('s-link').value.trim(),
-      starts_at: new Date($('s-start').value).toISOString(), ends_at: new Date($('s-end').value).toISOString(), description: $('s-desc').value.trim() || null };
+      starts_at: new Date($('s-start').value).toISOString(), ends_at: new Date($('s-end').value).toISOString(), description: $('s-desc').value.trim() || null, reminded: false };
     if (!/^https:\/\//i.test(row.link)) return P().toast('The link must start with https://');
     if (row.ends_at <= row.starts_at) return P().toast('End time must be after the start time.');
     const r = editing ? await sb.from('sessions').update(row).eq('id', editing) : await sb.from('sessions').insert(row);
@@ -94,10 +100,22 @@
 
   function closeMeeting() { $('meeting-frame').src = 'about:blank'; $('meeting-modal').classList.add('hidden'); $('meeting-modal').classList.remove('flex'); }
   $('meeting-close').onclick = closeMeeting;
+  $('att-close').onclick = () => $('attendance-modal').classList.add('hidden');
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMeeting(); });
 
   $('view-sessions').addEventListener('click', async e => {
     const t = s => e.target.closest(s), find = id => rows.find(x => x.id === id);
+    if (t('[data-join]') && !P().isStaff()) {
+      const id = t('[data-join]').dataset.join, s = find(id);
+      if (s && status(s) === 'live' && !att.has(id)) { att.add(id); sb.from('session_attendance').insert({ session_id: id, user_id: P().me.id }); }
+    }
+    if (t('[data-att]')) {
+      const s = find(t('[data-att]').dataset.att);
+      $('att-title').textContent = 'Attendance — ' + s.title; $('att-list').innerHTML = '<p class="text-xs">Loading…</p>';
+      $('attendance-modal').classList.remove('hidden');
+      const { data, error } = await sb.from('session_attendance').select('joined_at, profiles(full_name, username)').eq('session_id', s.id).order('joined_at');
+      $('att-list').innerHTML = error ? P().esc(error.message) : data.length ? data.map(r => `<div class="flex justify-between gap-3 p-2.5 rounded-xl border border-hairline"><span class="font-bold">${P().esc(r.profiles?.full_name || r.profiles?.username || 'Unknown')}</span><span class="${muted}">${tm(r.joined_at)}</span></div>`).join('') : '<p class="text-xs">Nobody joined while it was live.</p>';
+    }
     if (t('[data-watch]')) {
       const s = find(t('[data-watch]').dataset.watch);
       $('meeting-title').textContent = s.title; $('meeting-ext').href = safe(s.link); $('meeting-frame').src = embedUrl(s);

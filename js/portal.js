@@ -171,7 +171,7 @@
     else toast('iPhone/iPad: tap Share → Add to Home Screen. Desktop/Android: use the install icon in the address bar or browser menu.');
   };
 
-  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; } };
+  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; } };
 
   // ---------- Boot ----------
   document.addEventListener('DOMContentLoaded', async () => {
