@@ -1,5 +1,5 @@
-const CACHE = 'prizza-v2';
-const SHELL = ['index.html','login.html','css/styles.css','js/app.js','js/portal.js','js/config.js','js/auth.js','js/files.js','manifest.webmanifest','icons/icon-192.png'];
+const CACHE = 'prizza-v3';
+const SHELL = ['index.html','login.html','css/styles.css','js/app.js','js/portal.js','js/config.js','js/auth.js','js/files.js','js/sessions.js','manifest.webmanifest','icons/icon-192.png'];
 
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(

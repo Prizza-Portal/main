@@ -109,6 +109,11 @@
           <span class="nav-text" id="txt-nav-resources">Learning Resources</span>
         </button>
 
+        <button onclick="switchView('sessions')" id="nav-sessions" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
+          <i class="fa-solid fa-video text-base w-5 text-center"></i>
+          <span class="nav-text" id="txt-nav-sessions">Zoom Sessions</span>
+        </button>
+
         <button onclick="switchView('files')" id="nav-files" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-semibold text-charcoal-muted dark:text-gray-400 hover:text-charcoal dark:hover:text-white hover:bg-paper-200/50 dark:hover:bg-darkbg-card transition-all">
           <i class="fa-solid fa-folder-open text-base w-5 text-center"></i>
           <span class="nav-text" id="txt-nav-files">Files</span>
@@ -378,6 +383,41 @@
         <div id="files-list" class="space-y-2"></div>
       </section>
 
+      <!-- SECTION 8: ZOOM SESSIONS -->
+      <section id="view-sessions" class="content-view fade-in space-y-6 hidden">
+        <div class="pb-4 border-b border-hairline flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold tracking-wider text-britishNavy dark:text-white uppercase">Live classes</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Sessions</h2>
+            <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Join live classes and look back at past sessions.</p>
+          </div>
+          <button id="btn-newsession" style="display:none" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2 self-start"><i class="fa-solid fa-plus"></i> New session</button>
+        </div>
+
+        <form id="session-form" class="hidden p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
+          <h3 id="session-form-title" class="font-display text-xl font-bold">New session</h3>
+          <input id="s-title" required maxlength="120" placeholder="Session name (e.g. Maths — Algebra revision)" class="field">
+          <div class="grid sm:grid-cols-2 gap-3">
+            <select id="s-platform" class="field">
+              <option value="zoom">Zoom</option><option value="meet">Google Meet</option><option value="teams">Microsoft Teams</option>
+              <option value="youtube">YouTube Live (plays in the site)</option><option value="other">Other (plays in the site if the link allows embedding)</option>
+            </select>
+            <input id="s-link" type="url" required placeholder="Meeting link (https://…)" class="field">
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <label class="text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Starts<input id="s-start" type="datetime-local" required class="field mt-1"></label>
+            <label class="text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Ends<input id="s-end" type="datetime-local" required class="field mt-1"></label>
+          </div>
+          <textarea id="s-desc" rows="2" placeholder="Notes for students (optional)" class="field"></textarea>
+          <label id="s-notify-wrap" class="flex items-center gap-2 text-xs font-bold"><input id="s-notify" type="checkbox" checked> Send a push notification to everyone</label>
+          <div class="flex gap-2">
+            <button class="px-4 py-2.5 rounded-xl text-xs font-bold bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Save session</button>
+            <button type="button" id="s-cancel" class="px-4 py-2.5 rounded-xl text-xs font-bold border border-hairline">Cancel</button>
+          </div>
+        </form>
+        <div id="sessions-container" class="space-y-6"></div>
+      </section>
+
     </main>
   </div>
 
@@ -411,6 +451,18 @@
   </div>
 
 
+  <!-- IN-SITE MEETING VIEWER -->
+  <div id="meeting-modal" class="fixed inset-0 z-50 bg-black hidden flex-col">
+    <div class="flex items-center justify-between gap-3 px-4 py-3 bg-britishNavy text-white text-sm">
+      <span id="meeting-title" class="font-bold truncate"></span>
+      <div class="flex items-center gap-4 shrink-0">
+        <a id="meeting-ext" target="_blank" rel="noopener" class="text-xs underline">Open in new tab</a>
+        <button id="meeting-close" class="font-bold text-xs px-3 py-1.5 rounded-lg bg-white/15">Leave</button>
+      </div>
+    </div>
+    <iframe id="meeting-frame" class="flex-grow w-full border-0" allow="camera; microphone; fullscreen; display-capture; autoplay; picture-in-picture" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+
   <!-- STAFF POST MODAL -->
   <div id="post-modal" class="fixed inset-0 z-50 bg-charcoal/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-darkbg-card border border-hairline rounded-2xl max-w-md w-full p-7 shadow-2xl relative fade-in max-h-[92vh] overflow-y-auto">
@@ -434,5 +486,6 @@
   <script src="js/app.js"></script>
   <script src="js/portal.js"></script>
   <script src="js/files.js"></script>
+  <script src="js/sessions.js"></script>
 </body>
 </html>

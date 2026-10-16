@@ -38,3 +38,7 @@ Free Supabase plan limit: 50 MB per file (Storage → Settings).
 
 ## Real Android app (optional)
 Host the site first, then go to pwabuilder.com, enter your site URL and choose Android — it produces an APK/AAB you can install or publish on Google Play. iOS needs a Mac + Apple Developer account ($99/yr).
+
+## Sessions page
+Run `supabase/sessions.sql` once. Staff add sessions (name, platform, link, start/end); students automatically see Live / Upcoming / Past by the clock.
+Zoom, Google Meet and Teams cannot be embedded in other sites, so they open in a new tab/app. YouTube Live links play inside the site.
