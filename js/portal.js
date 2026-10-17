@@ -135,8 +135,14 @@
     if (confirm(`Signed in as ${me?.email.split('@')[0]}.\n\nSign out?`)) { await sb.auth.signOut(); location.replace('login.html'); }
   };
   const origCollapse = toggleSidebarCollapse, origView = switchView;
-  window.toggleSidebarCollapse = () => innerWidth < 768 ? $('sidebar').classList.toggle('open') : origCollapse();
-  window.switchView = v => { origView(v); $('sidebar').classList.remove('open'); };
+  // Phone menu: slide-out sidebar with a dark backdrop. (The old close-on-any-click handler fired on the
+  // menu button itself, because the header sits inside the page wrapper, so the menu opened and shut instantly.)
+  const setMenu = open => { $('sidebar').classList.toggle('open', open); $('sidebar-backdrop').classList.toggle('hidden', !open); };
+  window.toggleSidebarCollapse = () => innerWidth < 768 ? setMenu(!$('sidebar').classList.contains('open')) : origCollapse();
+  window.switchView = v => { origView(v); setMenu(false); };
+  $('sidebar-backdrop').addEventListener('click', () => setMenu(false));
+  addEventListener('resize', () => { if (innerWidth >= 768) setMenu(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
   // ---------- Push notifications ----------
   const pushOK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -194,7 +200,6 @@
     document.dispatchEvent(new Event('pz-ready'));
     const v = new URLSearchParams(location.search).get('view');
     if (v && $('view-' + v)) switchView(v);
-    $('main-wrapper').addEventListener('click', () => $('sidebar').classList.remove('open'));
 
     // Live updates while the app is open
     sb.channel('posts-live').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, p => {
