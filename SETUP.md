@@ -62,3 +62,10 @@ Run `supabase/voice.sql` once. Audio goes directly between browsers (WebRTC); Su
 5. Sign in as admin → **School setup**: add a school, add classes, then **Generate code**. Copy it immediately — only a hash is stored, so it can never be shown again. Give each class its own code.
 Students enter the code on the Sign up tab. Admins create teacher/admin accounts from **Users → Create account** (no code needed).
 Note: adding a user from the Supabase dashboard's "Add user" button will be rejected by the gate — use Users → Create account instead.
+
+## Separate files per school / class — run `supabase/scoped_files.sql` (after class_codes.sql)
+Safe to run: it only ADDS columns and rules. Every existing folder and file stays exactly where it is, in the space "Shared with everyone" (visible to all). Then, as admin, open Files → hover a top-level folder/file → the move icon → pick a school or class.
+- Space picker (top of the Files page): Shared with everyone / a whole school / a single class.
+- Students see Everyone + their school + their class. Teachers see and manage their own school. Admins see and manage everything (including "Shared with everyone").
+- Folders move together with everything inside them. A school or class that still holds files can't be deleted until you move or delete them.
+- Teachers and students need a class assigned (Users page → class dropdown) to see class files. Notices, homework, quizzes and sessions are NOT class-specific yet.

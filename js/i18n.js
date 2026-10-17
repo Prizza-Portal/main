@@ -101,10 +101,17 @@
     'Password must be at least 8 characters': 'يجب ألا تقل كلمة المرور عن 8 أحرف', 'New password for this user (at least 8 characters):': 'كلمة مرور جديدة لهذا المستخدم (8 أحرف على الأقل):',
   });
 
+  Object.assign(D, {
+    'Space': 'المساحة', 'Shared with everyone': 'مشترك مع الجميع', 'Move': 'نقل', 'Move to…': 'نقل إلى…', 'Moved': 'تم النقل',
+    'Notifications are only available for “Shared with everyone”.': 'الإشعارات متاحة فقط للمساحة «مشترك مع الجميع».',
+    'This school or class still has files or folders. Move or delete them first.': 'لا تزال هذه المدرسة أو الفصل يحتوي على ملفات أو مجلدات. انقلها أو احذفها أولًا.',
+    'Not allowed, or item not found': 'غير مسموح، أو العنصر غير موجود',
+  });
+
   const R = [ // [pattern, builder] for text that contains names, dates or numbers
     [/^Due (.+?)( · Overdue)?$/, (d, o) => `يُسلَّم في ${d}${o ? ' · متأخر' : ''}`],
     [/^(\d+) questions? · Best score:$/, n => `${n} سؤال · أفضل نتيجة:`],
-    [/^(\d+) questions?$/, n => `${n} سؤال`], [/^(.*) — (.*) · (\d+)\/(\d+) used · Expires (.*)$/, (s, c, u, m, d) => `${s} — ${c} · ${u}/${m} مستخدم · ينتهي ${d}`],
+    [/^(.*) \(whole school\)$/, n => `${n} (المدرسة كاملة)`], [/^(\d+) questions?$/, n => `${n} سؤال`], [/^(.*) — (.*) · (\d+)\/(\d+) used · Expires (.*)$/, (s, c, u, m, d) => `${s} — ${c} · ${u}/${m} مستخدم · ينتهي ${d}`],
     [/^Delete school “(.*)” and all its classes and codes\?$/, n => `حذف المدرسة «${n}» وكل فصولها ورموزها؟`], [/^Delete class “(.*)” and its codes\?$/, n => `حذف الفصل «${n}» ورموزه؟`], [/^(\d+) items?$/, n => `${n} عنصر`],
     [/^(\d+) questions — open Quizzes to take it\.$/, n => `${n} سؤال — افتح الاختبارات لتبدأ.`],
     [/^(.*) — results$/, t => `${t} — النتائج`], [/^Attendance — (.*)$/, t => `الحضور — ${t}`],

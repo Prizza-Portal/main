@@ -184,7 +184,7 @@
   };
 
   document.addEventListener('pz-lang', () => { if (me) { render(); refreshBell(); } });
-  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; }, get name() { return profile?.full_name || me.email.split('@')[0]; } };
+  window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; }, get school() { return profile?.school_id || null; }, get klass() { return profile?.class_id || null; }, get name() { return profile?.full_name || me.email.split('@')[0]; } };
 
   // ---------- Boot ----------
   document.addEventListener('DOMContentLoaded', async () => {

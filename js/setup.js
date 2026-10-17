@@ -75,7 +75,7 @@
     } else if (t('[data-delcode]')) {
       if (confirm('Delete this code?')) r = await sb.from('signup_codes').delete().eq('id', t('[data-delcode]').dataset.delcode); else return;
     } else return;
-    r.error ? P().toast(r.error.message) : load();
+    r.error ? P().toast(r.error.code === '23503' ? 'This school or class still has files or folders. Move or delete them first.' : r.error.message) : load();
   });
 
   document.addEventListener('pz-lang', () => schools.length && render());

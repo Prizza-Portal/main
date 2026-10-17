@@ -63,7 +63,8 @@ declare
   alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   -- 32 symbols, no I/O/0/1 look-alikes
   raw bytea; code text := ''; i int; sid uuid;
 begin
-  if not (is_admin() or session_user in ('postgres','supabase_admin')) then raise exception 'Admins only'; end if;
+  -- admins only; the single exception is the database owner in the SQL Editor (no signed-in user / no JWT) for first-time setup
+  if not (is_admin() or (auth.uid() is null and session_user in ('postgres','supabase_admin'))) then raise exception 'Admins only'; end if;
   select school_id into sid from classes where id = p_class;
   if sid is null then raise exception 'Unknown class'; end if;
   raw := gen_random_bytes(12);
