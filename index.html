@@ -390,7 +390,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <button id="btn-newfolder" class="side-btn !w-auto"><i class="fa-solid fa-folder-plus"></i> New folder</button>
             <button id="btn-upload" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2"><i class="fa-solid fa-upload"></i> Upload files</button>
-            <label class="flex items-center gap-2 text-xs font-bold text-charcoal-muted dark:text-darkbg-muted" title="Notifications are only available for “Shared with everyone”."><input id="files-notify" type="checkbox"> Notify students</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-charcoal-muted dark:text-darkbg-muted"><input id="files-notify" type="checkbox"> Notify students</label>
             <input id="file-input" type="file" multiple class="hidden">
           </div>
           <form id="folder-form" class="hidden">
@@ -415,11 +415,12 @@
             <h2 class="font-display text-3xl sm:text-4xl font-bold mt-1">Sessions</h2>
             <p class="text-sm text-charcoal-muted dark:text-darkbg-muted mt-1">Join live classes and look back at past sessions.</p>
           </div>
-          <button id="btn-newsession" style="display:none" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2 self-start"><i class="fa-solid fa-plus"></i> New session</button>
+          <div class="flex flex-wrap gap-2 self-start"><select id="s-filter" style="display:none" class="field !w-auto"></select><button id="btn-newsession" style="display:none" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-britishNavy dark:bg-white text-white dark:text-britishNavy flex items-center gap-2 self-start"><i class="fa-solid fa-plus"></i> New session</button></div>
         </div>
 
         <form id="session-form" class="hidden p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline space-y-3">
           <h3 id="session-form-title" class="font-display text-xl font-bold">New session</h3>
+          <label class="block text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Send to<select id="s-space" class="field mt-1"></select></label>
           <input id="s-title" required maxlength="120" placeholder="Session name (e.g. Maths — Algebra revision)" class="field">
           <div class="grid sm:grid-cols-2 gap-3">
             <select id="s-platform" class="field">
@@ -642,6 +643,7 @@
       <button onclick="closePostModal()" class="absolute right-5 top-5 text-charcoal-muted hover:text-charcoal dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       <h3 class="font-display text-2xl font-bold mb-4">New post</h3>
       <form onsubmit="submitPost(event)" class="space-y-3">
+        <label class="block text-xs font-bold text-charcoal-muted dark:text-darkbg-muted">Send to<select name="space" id="post-space" class="field mt-1"></select></label>
         <select name="kind" class="field"><option value="notice">School notice</option><option value="assignment">Prep / Homework</option><option value="resource">Learning resource</option><option value="blog">Blog post</option></select>
         <input name="title" required maxlength="140" placeholder="Title" class="field">
         <textarea name="body" rows="4" placeholder="Details" class="field"></textarea>
@@ -659,6 +661,7 @@
   <script src="js/app.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/portal.js"></script>
+  <script src="js/spaces.js"></script>
   <script src="js/files.js"></script>
   <script src="js/sessions.js"></script>
   <script src="js/quizzes.js"></script>

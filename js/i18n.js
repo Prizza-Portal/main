@@ -108,6 +108,11 @@
     'Not allowed, or item not found': 'غير مسموح، أو العنصر غير موجود',
   });
 
+  Object.assign(D, {
+    'Send to': 'إرسال إلى', 'All spaces': 'كل المساحات',
+    'You need a school or class assigned before you can post here. Ask an admin.': 'يجب تعيين مدرسة أو فصل لك قبل النشر هنا. اطلب ذلك من المشرف.',
+  });
+
   const R = [ // [pattern, builder] for text that contains names, dates or numbers
     [/^Due (.+?)( · Overdue)?$/, (d, o) => `يُسلَّم في ${d}${o ? ' · متأخر' : ''}`],
     [/^(\d+) questions? · Best score:$/, n => `${n} سؤال · أفضل نتيجة:`],

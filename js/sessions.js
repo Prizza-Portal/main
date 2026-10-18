@@ -2,7 +2,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const P = () => window.PZ;
-  let rows = [], editing = null, att = new Set(), counts = {};
+  let rows = [], editing = null, att = new Set(), counts = {}, filterKey = '';
 
   const PLATFORMS = { zoom: ['Zoom', 'fa-video'], meet: ['Google Meet', 'fa-video'], teams: ['Microsoft Teams', 'fa-users'],
     youtube: ['YouTube Live', 'fa-brands fa-youtube'], other: ['Online', 'fa-link'] };
@@ -37,7 +37,7 @@
       <div class="md:w-44 shrink-0"><p class="text-sm font-bold"><i class="fa-regular fa-calendar text-xs me-1.5 opacity-60"></i>${day(s.starts_at)}</p>
         <p class="${muted} mt-0.5">${tm(s.starts_at)} – ${tm(s.ends_at)}</p></div>
       <div class="min-w-0 flex-grow"><h4 class="font-display text-lg font-bold">${P().esc(s.title)}</h4>
-        <p class="${muted} mt-0.5"><i class="fa-solid ${pIcon} text-orange-500 me-1"></i>${pName}</p>
+        <p class="${muted} mt-0.5"><i class="fa-solid ${pIcon} text-orange-500 me-1"></i>${pName}${SPACES.labelOf(s) ? ` <span class="ms-2 px-2 py-0.5 rounded-full border border-hairline text-[10px] font-bold">${P().esc(SPACES.labelOf(s))}</span>` : ''}</p>
         ${s.description ? `<p class="${muted} mt-1 whitespace-pre-line">${P().esc(s.description)}</p>` : ''}</div>
       <div class="flex flex-wrap items-center gap-2">${badge}${present}
         ${canJoin && embedUrl(s) ? `<button data-watch="${s.id}" data-join="${s.id}" class="${btn} bg-britishNavy dark:bg-white text-white dark:text-britishNavy">Join in site</button>` : ''}
@@ -50,7 +50,9 @@
 
   function render() {
     const g = { live: [], upcoming: [], past: [] };
-    rows.forEach(s => g[status(s)].push(s));
+    rows.filter(s => !filterKey || SPACES.key({ school: s.school_id || null, class: s.class_id || null }) === filterKey).forEach(s => g[status(s)].push(s));
+    const sf = $('s-filter');
+    if (P().isStaff() && SPACES.list.length > 1) { sf.style.display = ''; sf.innerHTML = '<option value="">All spaces</option>' + SPACES.list.map(x => `<option value="${SPACES.key(x)}" ${SPACES.key(x) === filterKey ? 'selected' : ''}>${P().esc(x.label)}</option>`).join(''); } else sf.style.display = 'none';
     g.live.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
     g.upcoming.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
     g.past.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at));
@@ -77,6 +79,8 @@
     $('session-form-title').textContent = s ? 'Edit session' : 'New session';
     $('s-title').value = s?.title || ''; $('s-platform').value = s?.platform || 'zoom'; $('s-link').value = s?.link || '';
     $('s-start').value = s ? toLocalInput(s.starts_at) : ''; $('s-end').value = s ? toLocalInput(s.ends_at) : ''; $('s-desc').value = s?.description || '';
+    const mine = SPACES.mine(), want = s ? SPACES.key({ school: s.school_id || null, class: s.class_id || null }) : SPACES.canWriteScope(mine) ? SPACES.key(mine) : '';
+    $('s-space').innerHTML = SPACES.options(want);
     $('s-notify-wrap').style.display = s ? 'none' : '';
     $('session-form').classList.remove('hidden'); $('s-title').focus();
   }
@@ -88,13 +92,15 @@
     e.preventDefault();
     const row = { title: $('s-title').value.trim(), platform: $('s-platform').value, link: $('s-link').value.trim(),
       starts_at: new Date($('s-start').value).toISOString(), ends_at: new Date($('s-end').value).toISOString(), description: $('s-desc').value.trim() || null, reminded: false };
+    if (!$('s-space').value) return P().toast('You need a school or class assigned before you can post here. Ask an admin.');
+    Object.assign(row, SPACES.parse($('s-space').value));
     if (!/^https:\/\//i.test(row.link)) return P().toast('The link must start with https://');
     if (row.ends_at <= row.starts_at) return P().toast('End time must be after the start time.');
     const r = editing ? await sb.from('sessions').update(row).eq('id', editing) : await sb.from('sessions').insert(row);
     if (r.error) return P().toast(r.error.message);
     if (!editing && $('s-notify').checked)
       await sb.from('posts').insert({ kind: 'notice', important: true, title: 'New session: ' + row.title,
-        body: `${day(row.starts_at)}, ${tm(row.starts_at)} – ${tm(row.ends_at)}` });
+        body: `${day(row.starts_at)}, ${tm(row.starts_at)} – ${tm(row.ends_at)}`, school_id: row.school_id, class_id: row.class_id });
     P().toast(editing ? 'Session updated' : 'Session scheduled'); closeForm(); load();
   };
 
@@ -131,6 +137,8 @@
   });
 
   document.addEventListener('pz-lang', () => rows.length && render());
+  $('s-filter').onchange = e => { filterKey = e.target.value; render(); };
+  document.addEventListener('pz-spaces', () => rows.length && render());
   document.addEventListener('pz-ready', () => {
     load();
     setInterval(render, 30000); // statuses flip automatically as time passes

@@ -39,7 +39,6 @@
   function renderScope() {
     const sel = $('files-scope');
     sel.innerHTML = scopes.map(s => `<option value="${key(s)}" ${key(s) === key(scope) ? 'selected' : ''}>${esc(s.label)}</option>`).join('');
-    $('files-notify').disabled = !!scope.school; if (scope.school) $('files-notify').checked = false;
   }
 
   async function load() {
@@ -106,9 +105,9 @@
       ok.push(file.name);
     }
     if (ok.length) {
-      if ($('files-notify').checked && !scope.school)   // notices aren't class-specific yet, so only the "everyone" space can notify
+      if ($('files-notify').checked)   // the notice (and its push) goes only to the same space as the files
         await sb.from('posts').insert({ kind: 'notice', title: 'New files: ' + (folderOf(cur)?.name || 'Library'),
-          body: ok.slice(0, 5).join(', ') + (ok.length > 5 ? ` +${ok.length - 5} more` : ''), important: true });
+          body: ok.slice(0, 5).join(', ') + (ok.length > 5 ? ` +${ok.length - 5} more` : ''), important: true, ...here });
       P().toast(`Uploaded ${ok.length} file${ok.length > 1 ? 's' : ''}`);
     }
     load();

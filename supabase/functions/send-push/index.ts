@@ -18,7 +18,14 @@ Deno.serve(async (req) => {
     url: `index.html?view=${views[record.kind] ?? 'dashboard'}`,
     tag: record.id,
   });
-  const { data: subs } = await db.from('push_subscriptions').select('id, subscription');
+  // Only notify people who can actually see this post (same rules as the database: everyone / school / class; admins see all).
+  const { data: all } = await db.from('push_subscriptions').select('id, subscription, profiles!inner(role, school_id, class_id)');
+  const sees = (p: any) => {
+    if (p.role === 'admin' || !record.school_id) return true;
+    if (!record.class_id) return p.school_id === record.school_id;
+    return p.class_id === record.class_id || (p.role === 'teacher' && p.school_id === record.school_id);
+  };
+  const subs = (all ?? []).filter((s: any) => sees(s.profiles));
   let sent = 0;
   await Promise.all((subs ?? []).map(async (s) => {
     try { await webpush.sendNotification(s.subscription, payload); sent++; }

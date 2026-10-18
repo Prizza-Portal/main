@@ -69,3 +69,9 @@ Safe to run: it only ADDS columns and rules. Every existing folder and file stay
 - Students see Everyone + their school + their class. Teachers see and manage their own school. Admins see and manage everything (including "Shared with everyone").
 - Folders move together with everything inside them. A school or class that still holds files can't be deleted until you move or delete them.
 - Teachers and students need a class assigned (Users page → class dropdown) to see class files. Notices, homework, quizzes and sessions are NOT class-specific yet.
+
+## Class-specific sessions and notices — run `supabase/scoped_content.sql` (after scoped_files.sql)
+Adds a **Send to** picker (Shared with everyone / a whole school / one class) to New session and New post. Existing sessions and posts stay visible to everyone until you edit them.
+- Notifications (new post, new session, 15-minute reminders, "notify students" on files) now go ONLY to people who can see that item.
+- Re-deploy the `send-push` edge function with the new `index.ts`.
+- Teachers can only look up people in their own school. Quizzes and voice rooms are still shared by everyone.

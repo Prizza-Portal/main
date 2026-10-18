@@ -18,7 +18,8 @@
   // ---------- Rendering ----------
   const card = 'p-5 rounded-2xl bg-white dark:bg-darkbg-card border border-hairline';
   const muted = 'text-xs text-charcoal-muted dark:text-darkbg-muted';
-  const imp = p => p.important ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white">Important</span>' : '';
+  const chip = p => (isStaff() && window.SPACES && SPACES.labelOf(p)) ? `<span class="px-2 py-0.5 rounded-full border border-hairline text-[10px] font-bold">${esc(SPACES.labelOf(p))}</span>` : '';
+  const imp = p => (p.important ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 text-white">Important</span>' : '') + chip(p);
   const del = p => isStaff() ? `<button data-del="${p.id}" class="text-[11px] font-bold text-red-600 hover:underline">Delete</button>` : '';
   const link = (p, label = 'Open link') => safeUrl(p.link) ? `<a href="${safeUrl(p.link)}" target="_blank" rel="noopener" class="text-xs font-bold text-britishNavy dark:text-white hover:underline">${label} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>` : '';
   const when = p => `<span class="text-[11px] ${'text-charcoal-muted dark:text-darkbg-muted'}">${fmt(p.created_at)}</span>`;
@@ -105,13 +106,18 @@
   });
 
   // ---------- Staff: new post + schedule image ----------
-  window.openPostModal = () => $('post-modal').classList.remove('hidden');
+  window.openPostModal = async () => {
+    await SPACES.load(); const mine = SPACES.mine();
+    $('post-space').innerHTML = SPACES.options(SPACES.canWriteScope(mine) ? SPACES.key(mine) : '');
+    $('post-modal').classList.remove('hidden');
+  };
   window.closePostModal = () => $('post-modal').classList.add('hidden');
   window.submitPost = async e => {
     e.preventDefault();
     const f = e.target, g = n => f.elements[n];
     const row = { kind: g('kind').value, title: g('title').value.trim(), body: g('body').value.trim() || null,
-      link: g('link').value.trim() || null, due_date: g('due').value || null, important: g('important').checked };
+      link: g('link').value.trim() || null, due_date: g('due').value || null, important: g('important').checked, ...SPACES.parse(g('space').value) };
+    if (!g('space').value) return toast('You need a school or class assigned before you can post here. Ask an admin.');
     const { error } = await sb.from('posts').insert(row);
     if (error) return toast(error.message);
     f.reset(); closePostModal(); toast(row.important ? 'Posted — notifying everyone' : 'Posted');
@@ -184,6 +190,7 @@
   };
 
   document.addEventListener('pz-lang', () => { if (me) { render(); refreshBell(); } });
+  document.addEventListener('pz-spaces', () => { if (me && posts.length) render(); });
   window.PZ = { isStaff, esc, toast, fmt, get me() { return me; }, get role() { return profile?.role; }, get school() { return profile?.school_id || null; }, get klass() { return profile?.class_id || null; }, get name() { return profile?.full_name || me.email.split('@')[0]; } };
 
   // ---------- Boot ----------
