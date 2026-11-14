@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      # the desktop/ folder is Electron app source, not website content - keep build artifacts out of Pages
+      - name: Remove desktop build artifacts
+        run: rm -rf desktop/node_modules desktop/dist
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
