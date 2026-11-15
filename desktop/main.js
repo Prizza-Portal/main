@@ -27,7 +27,8 @@ let settings = { tray: true, bounds: null, max: false, zoom: 0, told: false, not
 function loadSettings() { try { Object.assign(settings, JSON.parse(fs.readFileSync(settingsFile(), "utf8"))); } catch (e) {} }
 function saveSettings() { try { fs.mkdirSync(path.dirname(settingsFile()), { recursive: true }); fs.writeFileSync(settingsFile(), JSON.stringify(settings)); } catch (e) {} }
 const clean = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
-const trusted = u => { try { return new URL(u).origin === ORIGIN; } catch (e) { return false; } };
+// trusted = the live site, or anything running from inside this app's own files (the bundled site)
+const trusted = u => { try { const x = new URL(u); return x.origin === ORIGIN || x.protocol === "file:"; } catch (e) { return false; } };
 const fromApp = e => { const u = (e.senderFrame && e.senderFrame.url) || ""; return trusted(u) || (u.startsWith("file:") && u.endsWith("offline.html")); };
 
 function openExternal(u) {
@@ -43,7 +44,7 @@ function showWindow() { if (!win) return; if (win.isMinimized()) win.restore(); 
 function updateBadge() {
   try { if (win && process.platform === "win32") win.setOverlayIcon(unread ? BADGE : null, unread ? unread + " new" : ""); app.setBadgeCount(unread); if (tray) tray.setToolTip(unread ? "Prizza - " + unread + " new" : "Prizza"); } catch (e) {}
 }
-function loadSite() { offline = false; clearInterval(retryTimer); win.loadURL(SITE); }
+function loadSite() { offline = false; clearInterval(retryTimer); win.loadFile(path.join(__dirname, "app", "site", "index.html")); }
 async function reachable() { try { const r = await net.fetch(SITE, { method: "HEAD", cache: "no-store", signal: AbortSignal.timeout(6000) }); return r.status < 500; } catch (e) { return false; } }
 async function reconnect() { if (await reachable()) { loadSite(); return true; } return false; }
 function showOffline() {
@@ -66,7 +67,7 @@ function createWindow() {
   win.once("ready-to-show", () => { if (!process.argv.includes("--hidden")) win.show(); });
   wc.on("did-finish-load", () => log("loaded", wc.getURL()));
   wc.on("did-fail-load", (e, code, desc, url, isMain) => { if (isMain && code !== -3) { log("fail", code); showOffline(); } });
-  wc.on("will-navigate", (e, url) => { if (url.startsWith("file:")) return e.preventDefault(); if (!trusted(url)) { e.preventDefault(); openExternal(url); } });
+  wc.on("will-navigate", (e, url) => { if (!trusted(url)) { e.preventDefault(); openExternal(url); } });
   wc.setWindowOpenHandler(({ url }) => { if (trusted(url)) wc.loadURL(url); else openExternal(url); return { action: "deny" }; });
   wc.on("before-input-event", (e, i) => {
     if (i.type !== "keyDown") return; const c = i.control || i.meta, k = i.key;

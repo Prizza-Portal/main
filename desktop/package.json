@@ -1,14 +1,16 @@
 {
   "name": "prizza-desktop",
   "productName": "Prizza",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Prizza school portal - desktop app",
   "main": "main.js",
   "author": "Prizza-Portal",
   "license": "UNLICENSED",
   "scripts": {
+    "prestart": "node scripts/sync-site.js",
     "start": "electron .",
-    "dist": "electron-builder --win zip"
+    "predist": "node scripts/sync-site.js",
+    "dist": "electron-builder"
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -18,7 +20,7 @@
     "appId": "com.prizza.desktop",
     "productName": "Prizza",
     "directories": {
-      "output": "D:\\prizza-build"
+      "output": "C:\\prizza-build"
     },
     "files": [
       "main.js",
@@ -28,7 +30,8 @@
     ],
     "win": {
       "target": [
-        "zip"
+        "zip",
+        "portable"
       ],
       "icon": "app/assets/icon.ico"
     },
