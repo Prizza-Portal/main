@@ -1,5 +1,5 @@
-const CACHE = 'prizza-v10';
-const SHELL = ['index.html','login.html','css/styles.css','js/app.js','js/portal.js','js/config.js','js/auth.js','js/i18n.js','js/spaces.js','js/files.js','js/sessions.js','js/quizzes.js','js/users.js','js/setup.js','js/whatsapp.js','js/voice.js','manifest.webmanifest','icons/icon-192.png'];
+﻿const CACHE = 'prizza-v11';
+const SHELL = ['index.html','login.html','css/styles.css','js/app.js','js/portal.js','js/config.js','js/auth.js','js/i18n.js','js/spaces.js','js/files.js','js/sessions.js','js/quizzes.js','js/users.js','js/setup.js','js/whatsapp.js','js/voice.js','manifest.webmanifest','icons/icon-192.png','vendor/tailwind.js','vendor/supabase.js','vendor/fontawesome.css','vendor/fonts.css','vendor/fonts/f1.woff2','vendor/fonts/f10.woff2','vendor/fonts/f11.woff2','vendor/fonts/f12.woff2','vendor/fonts/f13.woff2','vendor/fonts/f14.woff2','vendor/fonts/f15.woff2','vendor/fonts/f16.woff2','vendor/fonts/f17.woff2','vendor/fonts/f2.woff2','vendor/fonts/f3.woff2','vendor/fonts/f4.woff2','vendor/fonts/f5.woff2','vendor/fonts/f6.woff2','vendor/fonts/f7.woff2','vendor/fonts/f8.woff2','vendor/fonts/f9.woff2','vendor/webfonts/fa-solid-900.woff2','vendor/webfonts/fa-brands-400.woff2','vendor/webfonts/fa-regular-400.woff2','vendor/webfonts/fa-v4compatibility.woff2','vendor/webfonts/fa-solid-900.ttf','vendor/webfonts/fa-brands-400.ttf','vendor/webfonts/fa-regular-400.ttf','vendor/webfonts/fa-v4compatibility.ttf'];
 
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(
@@ -14,7 +14,7 @@ self.addEventListener('fetch', e => {
   }).catch(() => caches.match(r).then(m => m || caches.match('index.html'))));
 });
 
-// Push notifications — work even when the app is closed
+// Push notifications â€” work even when the app is closed
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data.json(); } catch { d = { title: 'Prizza', body: e.data ? e.data.text() : '' }; }
