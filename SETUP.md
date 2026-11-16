@@ -36,8 +36,20 @@ Upload the whole `prizza` folder to Netlify, Vercel, Cloudflare Pages or GitHub 
 Run `supabase/files.sql` in the SQL Editor once. Staff see "New folder" / "Upload files" in the Files tab; students can browse, open and download.
 Free Supabase plan limit: 50 MB per file (Storage → Settings).
 
-## Real Android app (optional)
-Host the site first, then go to pwabuilder.com, enter your site URL and choose Android — it produces an APK/AAB you can install or publish on Google Play. iOS needs a Mac + Apple Developer account ($99/yr).
+## Real Android app
+The repo has a native Android project in `mobile/` (Capacitor — the site is bundled inside the APK, works offline for the UI).
+To rebuild the APK:
+1. Install JDK 21 + the Android SDK (see `C:\Android\` on the build machine) and Node.
+2. From the repo root:
+   ```
+   cd mobile
+   node scripts/sync-mobile.js      # copy the site into mobile/www
+   cd android
+   .\gradlew.bat assembleDebug      # APK -> android/app/build/outputs/apk/debug/app-debug.apk
+   ```
+   (Set `JAVA_HOME` to the JDK 21 folder and `GRADLE_USER_HOME` to a stable cache folder.)
+3. For the Play Store: generate a release keystore and build `assembleRelease` (signing config in `app/build.gradle`). iOS needs a Mac + Apple Developer account ($99/yr).
+Fallback: pwabuilder.com wraps the hosted site into an APK (thin online wrapper — no offline UI).
 
 ## Sessions page
 Run `supabase/sessions.sql` once. Staff add sessions (name, platform, link, start/end); students automatically see Live / Upcoming / Past by the clock.
