@@ -1,0 +1,11 @@
+{
+  "appId": "com.prizza.portal",
+  "appName": "Prizza",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

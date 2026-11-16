@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Prizza</string>
+    <string name="title_activity_main">Prizza</string>
+    <string name="package_name">com.prizza.portal</string>
+    <string name="custom_url_scheme">com.prizza.portal</string>
+</resources>
